@@ -8,7 +8,7 @@ from pathlib import Path
 from ai.app.config import settings
 from ai.app.retrieval.evidence_retriever import EvidenceRetriever
 from ai.app.llm.job_parser import JobDescriptionParser
-from ai.app.latex_renderer import build_full_resume_latex
+from ai.app.rendering.latex_renderer import build_full_resume_latex
 from ai.app.llm.resume_generator import ResumeGenerator
 
 
