@@ -30,26 +30,22 @@ Content:
         evidence_context = PromptBuilder.build_evidence_context(evidence)
 
         return f"""
-You are an evidence-grounded resume writer.
+You are an evidence-grounded resume information extractor.
 
-Your task is to create STRUCTURED RESUME DATA from retrieved evidence.
-Do NOT generate LaTeX.
-Do NOT generate markdown.
-Return ONLY valid JSON.
+Your task is to extract structured resume information from the retrieved evidence and the target job description.
 
-The final resume will later be rendered into a fixed LaTeX template, so your job is only to produce clean structured content.
+IMPORTANT:
+- Return ONLY valid JSON.
+- Do NOT return markdown.
+- Do NOT return LaTeX.
+- Do NOT add explanations.
+- Use only the evidence and job description.
+- Do not invent unsupported metrics, dates, employers, awards, GPAs, or tools.
+- If a personal/contact field is not available, return an empty string.
+- If a section has weak evidence, keep it conservative.
+- Publications and awards are optional.
 
-STRICT RULES:
-1. Use ONLY the retrieved evidence below.
-2. Do NOT invent names of employers, dates, GPAs, degrees, metrics, tools, publications, or project details unless clearly supported.
-3. If personal information is unknown, leave it as an empty string.
-4. If a section lacks evidence, return an empty list or a conservative placeholder summary.
-5. Prefer ATS-friendly wording aligned with the job description.
-6. Bullet points must be concise, professional, and evidence-grounded.
-7. Publications and awards are optional.
-8. Return ONLY JSON. No explanations. No code fences.
-
-Return JSON in EXACTLY this schema:
+Return JSON with EXACTLY this schema:
 
 {{
   "header": {{
@@ -101,13 +97,14 @@ Return JSON in EXACTLY this schema:
   ]
 }}
 
-Formatting expectations based on the fixed LaTeX template:
-- Education entry maps to:
-  \\resumeSubheading{{degree}}{{dates}}{{institution}}{{location_gpa}}
-- Experience entry maps to:
-  \\resumeSubheading{{title}}{{dates}}{{organization}}{{location}}
-- Project entry maps to:
-  \\resumeProjectHeading{{\\textbf{{name}} $|$ \\emph{{tech}}}}{{label_right}}
+Rules:
+1. Summary should be ATS-friendly and professional.
+2. Skills should be grouped into meaningful categories.
+3. Experience should contain concise, impactful, recruiter-style bullets.
+4. If formal experience is weak, place strong technical work in projects.
+5. Prefer truthful alignment over aggressive wording.
+6. Keep bullets concise and professional.
+7. Use the target job description to prioritize relevant evidence.
 
 Job targeting context:
 Target role: {req.target_role}
@@ -137,6 +134,8 @@ Retrieved evidence:
             return f"PDF={source_name}, page={page}"
         return str(meta)
 
+
+# we can call second LLM from this.
 
 # from __future__ import annotations
 #
