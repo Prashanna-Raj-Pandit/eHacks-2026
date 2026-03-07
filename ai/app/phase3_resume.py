@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 import argparse
+import json
 from datetime import datetime
 from pathlib import Path
 
 from ai.app.config import settings
 from ai.app.evidence_retriever import EvidenceRetriever
 from ai.app.job_parser import JobDescriptionParser
-from ai.app.models import ResumeGenerationResult
+from ai.app.latex_renderer import build_full_resume_latex
 from ai.app.resume_generator import ResumeGenerator
 
 
-
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate evidence-grounded resume content")
+    parser = argparse.ArgumentParser(description="Generate professional LaTeX resume from evidence")
     parser.add_argument(
         "--job-file",
         type=str,
@@ -42,7 +42,6 @@ def read_job_description(path: str) -> str:
     return file_path.read_text(encoding="utf-8").strip()
 
 
-
 def main() -> None:
     settings.ensure_dirs()
     args = parse_args()
@@ -57,41 +56,35 @@ def main() -> None:
         job_description=job_description,
         target_role=args.target_role,
     )
-    print(f"[INFO] Target role: {requirements.target_role}")
-    print(f"[INFO] Must-have skills found: {len(requirements.must_have_skills)}")
 
     print("[INFO] Retrieving evidence from ChromaDB...")
     retriever = EvidenceRetriever()
     evidence = retriever.retrieve(job_description=job_description, req=requirements)
     print(f"[INFO] Evidence chunks retrieved: {len(evidence)}")
 
-    print("[INFO] Generating final resume content with Cohere...")
+    print("[INFO] Generating structured resume data with Cohere...")
     generator = ResumeGenerator()
-    final_markdown = generator.generate(
+    structured_resume = generator.generate_structured_resume(
         job_description=job_description,
         requirements=requirements,
         evidence=evidence,
     )
 
-    result = ResumeGenerationResult(
-        job_requirements=requirements,
-        evidence=evidence,
-        final_markdown=final_markdown,
-    )
+    print("[INFO] Rendering final LaTeX resume...")
+    latex_output = build_full_resume_latex(structured_resume)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # md_path = settings.phase3_output_dir / f"{args.save_prefix}_{timestamp}.md"
-    md_path = settings.phase3_output_dir / f"{args.save_prefix}_{timestamp}.tex" # Latex
     json_path = settings.phase3_output_dir / f"{args.save_prefix}_{timestamp}.json"
+    tex_path = settings.phase3_output_dir / f"{args.save_prefix}_{timestamp}.tex"
 
-    md_path.write_text(final_markdown, encoding="utf-8")
-    json_path.write_text(result.model_dump_json(indent=2), encoding="utf-8")
+    json_path.write_text(json.dumps(structured_resume, indent=2, ensure_ascii=False), encoding="utf-8")
+    tex_path.write_text(latex_output, encoding="utf-8")
 
+    print(f"[INFO] Structured JSON saved to: {json_path}")
+    print(f"[INFO] Final LaTeX saved to: {tex_path}")
     print("\n" + "=" * 100)
-    print(final_markdown)
+    print(latex_output)
     print("=" * 100)
-    print(f"[INFO] LaTex output saved to: {md_path}")
-    print(f"[INFO] JSON output saved to: {json_path}")
 
 
 if __name__ == "__main__":
