@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from ai.app.config import settings
-from ai.app.github_ingestor import GitHubIngestor
-from ai.app.pdf_ingestor import PDFIngestor
+from ai.app.ingestion.github_ingestor import GitHubIngestor
+from ai.app.ingestion.pdf_ingestor import PDFIngestor
 from ai.app.utils import write_jsonl
 
 
