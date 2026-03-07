@@ -2,6 +2,7 @@
 node_modules/
 client/dist/
 client/build/
+server/public/
 *.log
 npm-debug.log*
 
