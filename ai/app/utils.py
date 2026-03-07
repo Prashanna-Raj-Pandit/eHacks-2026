@@ -4,8 +4,8 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Iterable
-
+from typing import Iterable, TypeVar
+from pydantic import BaseModel
 from ai.app.models import DocumentRecord
 
 SECRET_PATTERNS = [
@@ -15,6 +15,7 @@ SECRET_PATTERNS = [
     re.compile(r"sk-[A-Za-z0-9]{20,}"),
     re.compile(r"-----BEGIN [A-Z ]+PRIVATE KEY-----.*?-----END [A-Z ]+PRIVATE KEY-----", re.DOTALL),
 ]
+ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
 def clean_text(text: str) -> str:
@@ -42,3 +43,20 @@ def write_jsonl(path: Path, records: Iterable[DocumentRecord]) -> None:
     with path.open("w", encoding="utf-8") as f:
         for record in records:
             f.write(json.dumps(record.model_dump(), ensure_ascii=False) + "\n")
+
+
+def read_jsonl(path: Path, model_cls: type[ModelT]) -> list[ModelT]:
+    items: list[ModelT] = []
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            items.append(model_cls(**json.loads(line)))
+    return items
+
+
+def safe_str(value: object) -> str:
+    if value is None:
+        return ""
+    return str(value)
