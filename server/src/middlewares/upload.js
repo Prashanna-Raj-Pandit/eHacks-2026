@@ -9,6 +9,9 @@ export const MimeTypes = {
   PNG: 'image/png',
   JPG: 'image/jpg',
   JPEG: 'image/jpeg',
+  PDF: 'application/pdf',
+  DOC: 'application/msword',
+  DOCX: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 }
 
 const rootDir = process.cwd()
