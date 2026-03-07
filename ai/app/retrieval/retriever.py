@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from ai.app.embed_store import EmbeddingStore
+from ai.app.indexing.embed_store import EmbeddingStore
 
 
 

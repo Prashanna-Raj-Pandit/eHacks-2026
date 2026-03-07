@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import OrderedDict
 
 from ai.app.config import settings
-from ai.app.embed_store import EmbeddingStore
+from ai.app.indexing.embed_store import EmbeddingStore
 from ai.app.models import JobRequirements, RetrievedEvidence
 
 
