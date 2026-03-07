@@ -8,7 +8,6 @@ from typing import Iterable
 
 from app.models import DocumentRecord
 
-
 SECRET_PATTERNS = [
     re.compile(r"ghp_[A-Za-z0-9]{20,}"),
     re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
@@ -26,7 +25,6 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-
 def redact_secrets(text: str) -> str:
     output = text
     for pattern in SECRET_PATTERNS:
@@ -34,11 +32,9 @@ def redact_secrets(text: str) -> str:
     return output
 
 
-
 def make_doc_id(*parts: str) -> str:
     raw = "::".join(parts)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
-
 
 
 def write_jsonl(path: Path, records: Iterable[DocumentRecord]) -> None:
