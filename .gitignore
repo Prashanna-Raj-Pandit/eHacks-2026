@@ -1,0 +1,34 @@
+# ── Node / MERN ──────────────────────
+node_modules/
+client/dist/
+client/build/
+*.log
+npm-debug.log*
+
+# ── Python / AI ──────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+.ipynb_checkpoints/
+
+# ── ML Artifacts (usually too large) ─
+ai/models/*.pkl
+ai/models/*.pt
+ai/models/*.h5
+ai/models/*.onnx
+
+# ── Environment Variables ─────────────
+.env
+.env.local
+.env.production
+.env.*
+
+# ── OS / Editor ──────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
