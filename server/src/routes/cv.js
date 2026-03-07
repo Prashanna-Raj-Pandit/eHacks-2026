@@ -1,40 +1,32 @@
 import { Router } from 'express'
+import JD from '../models/jd.js'
 
 const router = Router()
 
-// in-memory for now, swap with mongoose later
-let jds = []
-
-// GET all JDs
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+  const jds = await JD.find().sort({ createdAt: -1 })
   res.json({ success: true, data: jds })
 })
 
-// POST create JD
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { title, content } = req.body
-  const jd = { id: Date.now(), title, content, cv: null }
-  jds.push(jd)
+  const jd = await JD.create({ title, content })
   res.status(201).json({ success: true, data: jd })
 })
 
-// PUT update JD
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const { title, content } = req.body
-  jds = jds.map(j => j.id === Number(req.params.id) ? { ...j, title, content } : j)
-  const updated = jds.find(j => j.id === Number(req.params.id))
-  res.json({ success: true, data: updated })
+  const jd = await JD.findByIdAndUpdate(req.params.id, { title, content }, { new: true })
+  res.json({ success: true, data: jd })
 })
 
-// DELETE jd
-router.delete('/:id', (req, res) => {
-  jds = jds.filter(j => j.id !== Number(req.params.id))
+router.delete('/:id', async (req, res) => {
+  await JD.findByIdAndDelete(req.params.id)
   res.json({ success: true })
 })
 
-// POST generate CV — calls python AI service
 router.post('/:id/generate', async (req, res) => {
-  const jd = jds.find(j => j.id === Number(req.params.id))
+  const jd = await JD.findById(req.params.id)
   if (!jd) return res.status(404).json({ success: false, error: 'JD not found' })
 
   try {
@@ -44,8 +36,9 @@ router.post('/:id/generate', async (req, res) => {
       body: JSON.stringify({ jobDescription: jd.content }),
     })
     const data = await aiRes.json()
-    jds = jds.map(j => j.id === Number(req.params.id) ? { ...j, cv: data.cv } : j)
-    res.json({ success: true, data: data.cv })
+    jd.cv = data.cv
+    await jd.save()
+    res.json({ success: true, data: jd.cv })
   } catch (err) {
     res.status(500).json({ success: false, error: 'AI service unreachable' })
   }
