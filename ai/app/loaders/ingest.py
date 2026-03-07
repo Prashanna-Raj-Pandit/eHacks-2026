@@ -1,148 +1,76 @@
 from __future__ import annotations
 
-import base64
+import argparse
 from pathlib import Path
-from typing import Any
-
-import requests
 
 from app.config import settings
-from app.models import DocumentRecord
-from app.utils import clean_text, make_doc_id, redact_secrets
+from app.github_ingestor import GitHubIngestor
+from app.pdf_ingestor import PDFIngestor
+from app.utils import write_jsonl
 
 
-class GitHubIngestor:
-    def __init__(self) -> None:
-        self.session = requests.Session()
-        headers = {
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "career-rag-mvp",
-        }
-        if settings.github_token:
-            headers["Authorization"] = f"Bearer {settings.github_token}"
-        self.session.headers.update(headers)
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Phase 1 ingestion for career RAG MVP")
+    parser.add_argument(
+        "--repos",
+        nargs="*",
+        default=[],
+        help="Specific GitHub repo names to ingest",
+    )
+    parser.add_argument(
+        "--github-user",
+        default=settings.github_username,
+        help="GitHub username or owner",
+    )
+    parser.add_argument(
+        "--repo-limit",
+        type=int,
+        default=3,
+        help="If no repos are given, ingest this many recent repos",
+    )
+    parser.add_argument(
+        "--skip-github",
+        action="store_true",
+        help="Skip GitHub ingestion",
+    )
+    parser.add_argument(
+        "--skip-pdf",
+        action="store_true",
+        help="Skip PDF ingestion",
+    )
+    return parser.parse_args()
 
-    def _get(self, url: str, params: dict[str, Any] | None = None) -> Any:
-        response = self.session.get(url, params=params, timeout=settings.github_timeout_seconds)
-        response.raise_for_status()
-        return response.json()
 
-    def list_user_repos(self, username: str | None = None, limit: int = 5) -> list[dict[str, Any]]:
-        username = username or settings.github_username
-        if not username:
-            raise ValueError("GitHub username not found. Set GITHUB_USERNAME in .env")
+def main() -> None:
+    args = parse_args()
+    settings.ensure_dirs()
 
-        repos = self._get(
-            f"{settings.github_api_base}/users/{username}/repos",
-            params={"per_page": min(limit, 100), "sort": "updated"},
-        )
-        return repos[:limit]
+    all_records = []
 
-    def should_include_file(self, path_str: str, size: int = 0) -> bool:
-        path = Path(path_str)
+    if not args.skip_github:
+        github = GitHubIngestor()
+        repo_names = args.repos
 
-        if any(part in settings.ignored_directories for part in path.parts):
-            return False
+        if not repo_names:
+            repos = github.list_user_repos(username=args.github_user, limit=args.repo_limit)
+            repo_names = [repo["name"] for repo in repos]
 
-        if size > settings.max_file_size_bytes:
-            return False
+        print(f"[INFO] Ingesting GitHub repos: {repo_names}")
+        github_records = github.ingest_selected_repos(repo_names=repo_names, owner=args.github_user)
+        print(f"[INFO] GitHub records collected: {len(github_records)}")
+        all_records.extend(github_records)
 
-        lower_name = path.name.lower()
-        if any(lower_name.endswith(pattern) for pattern in settings.ignored_file_patterns):
-            return False
+    if not args.skip_pdf:
+        pdf_ingestor = PDFIngestor()
+        pdf_records = pdf_ingestor.ingest_directory(settings.pdf_dir)
+        print(f"[INFO] PDF records collected: {len(pdf_records)}")
+        all_records.extend(pdf_records)
 
-        if path.name in settings.allowed_exact_names:
-            return True
+    output_path = settings.output_dir / "phase1_documents.jsonl"
+    write_jsonl(output_path, all_records)
+    print(f"[INFO] Total records written: {len(all_records)}")
+    print(f"[INFO] Output file: {output_path}")
 
-        return path.suffix.lower() in settings.allowed_extensions
 
-    def fetch_repo_tree(self, owner: str, repo: str, branch: str) -> list[dict[str, Any]]:
-        tree_url = f"{settings.github_api_base}/repos/{owner}/{repo}/git/trees/{branch}"
-        data = self._get(tree_url, params={"recursive": "1"})
-        return data.get("tree", [])
-
-    def fetch_file_content(self, owner: str, repo: str, file_path: str) -> str | None:
-        url = f"{settings.github_api_base}/repos/{owner}/{repo}/contents/{file_path}"
-        try:
-            data = self._get(url)
-        except requests.HTTPError:
-            return None
-
-        if isinstance(data, list):
-            return None
-
-        if data.get("encoding") == "base64" and data.get("content"):
-            try:
-                decoded = base64.b64decode(data["content"])
-                return decoded.decode("utf-8", errors="ignore")
-            except Exception:
-                return None
-
-        download_url = data.get("download_url")
-        if download_url:
-            try:
-                response = self.session.get(download_url, timeout=settings.github_timeout_seconds)
-                response.raise_for_status()
-                return response.text
-            except Exception:
-                return None
-
-        return None
-
-    def ingest_repo(self, owner: str, repo: str, branch: str = "main") -> list[DocumentRecord]:
-        records: list[DocumentRecord] = []
-
-        try:
-            tree = self.fetch_repo_tree(owner, repo, branch)
-        except requests.HTTPError:
-            if branch == "main":
-                tree = self.fetch_repo_tree(owner, repo, "master")
-                branch = "master"
-            else:
-                raise
-
-        for item in tree:
-            if item.get("type") != "blob":
-                continue
-
-            path_str = item.get("path", "")
-            size = item.get("size", 0)
-
-            if not self.should_include_file(path_str, size):
-                continue
-
-            content = self.fetch_file_content(owner, repo, path_str)
-            if not content:
-                continue
-
-            cleaned = clean_text(redact_secrets(content))
-            if len(cleaned) < 20:
-                continue
-
-            record = DocumentRecord(
-                doc_id=make_doc_id("github", owner, repo, path_str),
-                text=cleaned,
-                metadata={
-                    "source_type": "github_repo",
-                    "owner": owner,
-                    "repo": repo,
-                    "branch": branch,
-                    "file_path": path_str,
-                    "file_size": size,
-                    "url": f"https://github.com/{owner}/{repo}/blob/{branch}/{path_str}",
-                },
-            )
-            records.append(record)
-
-        return records
-
-    def ingest_selected_repos(self, repo_names: list[str], owner: str | None = None) -> list[DocumentRecord]:
-        owner = owner or settings.github_username
-        if not owner:
-            raise ValueError("GitHub username not found. Set GITHUB_USERNAME in .env")
-
-        all_records: list[DocumentRecord] = []
-        for repo_name in repo_names:
-            repo_records = self.ingest_repo(owner=owner, repo=repo_name)
-            all_records.extend(repo_records)
-        return all_records
+if __name__ == "__main__":
+    main()
