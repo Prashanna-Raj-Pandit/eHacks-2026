@@ -4,37 +4,10 @@ python-dotenv==1.0.1
 pydantic==2.9.2
 
 
-
-# --- Phase 1: Ingestion ---
-PyGithub==1.59.1
-PyPDF2==3.0.1
-pdfplumber==0.10.3
-
-# --- Phase 2: Chunking & Embedding ---
-scikit-learn==1.3.0
-nltk==3.8.1
-numpy==1.24.3
-scipy==1.11.4
-
-# --- Phase 3: Vector Database ---
-chromadb==0.3.21
-sentence-transformers==2.2.2
-
-# --- API & Server ---
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic-settings==2.1.0
-
-# --- Database ---
-sqlalchemy==2.0.23
-psycopg2-binary==2.9.9
-
-# --- Async ---
-aiofiles==23.2.1
-httpx==0.25.2
-
-# --- Utilities ---
-python-multipart==0.0.6
-pandas==2.1.3
-tqdm==4.66.1
-colorama==0.4.6
+PyMuPDF==1.26.1
+requests==2.32.3
+python-dotenv==1.0.1
+pydantic==2.9.2
+chromadb==0.5.5
+sentence-transformers==3.0.1
+langchain-text-splitters==0.2.2
