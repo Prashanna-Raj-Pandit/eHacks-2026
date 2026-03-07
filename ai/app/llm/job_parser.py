@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ai.app.cohere_client import CohereClient
+from ai.app.llm.cohere_client import CohereClient
 from ai.app.models import JobRequirements
 
 

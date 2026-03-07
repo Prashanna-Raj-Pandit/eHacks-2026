@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from ai.app.cohere_client import CohereClient
+from ai.app.llm.cohere_client import CohereClient
 from ai.app.models import JobRequirements, RetrievedEvidence
-from ai.app.prompt_builder import PromptBuilder
+from ai.app.llm.prompt_builder import PromptBuilder
 
 
 class ResumeGenerator:

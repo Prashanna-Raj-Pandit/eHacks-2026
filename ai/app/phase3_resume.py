@@ -6,10 +6,10 @@ from datetime import datetime
 from pathlib import Path
 
 from ai.app.config import settings
-from ai.app.evidence_retriever import EvidenceRetriever
-from ai.app.job_parser import JobDescriptionParser
+from ai.app.retrieval.evidence_retriever import EvidenceRetriever
+from ai.app.llm.job_parser import JobDescriptionParser
 from ai.app.latex_renderer import build_full_resume_latex
-from ai.app.resume_generator import ResumeGenerator
+from ai.app.llm.resume_generator import ResumeGenerator
 
 
 def parse_args() -> argparse.Namespace:

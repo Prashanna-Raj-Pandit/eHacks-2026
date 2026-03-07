@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ai.app.chunker import DocumentChunker
+from ai.app.indexing.chunker import DocumentChunker
 from ai.app.config import settings
-from ai.app.embed_store import EmbeddingStore
+from ai.app.indexing.embed_store import EmbeddingStore
 from ai.app.models import DocumentRecord
 from ai.app.utils import read_jsonl, write_jsonl
 
