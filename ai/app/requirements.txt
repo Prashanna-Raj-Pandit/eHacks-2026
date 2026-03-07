@@ -4,10 +4,7 @@ python-dotenv==1.0.1
 pydantic==2.9.2
 
 
-PyMuPDF==1.26.1
 requests==2.32.3
-python-dotenv==1.0.1
-pydantic==2.9.2
 chromadb==0.5.5
 sentence-transformers==3.0.1
 langchain-text-splitters==0.2.2
