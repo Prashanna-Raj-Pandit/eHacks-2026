@@ -6,9 +6,9 @@ from typing import Any
 
 import requests
 
-from app.config import settings
-from app.models import DocumentRecord
-from app.utils import clean_text, make_doc_id, redact_secrets
+from ai.app.config import settings
+from ai.app.models import DocumentRecord
+from ai.app.utils import clean_text, make_doc_id, redact_secrets
 
 
 class GitHubIngestor:

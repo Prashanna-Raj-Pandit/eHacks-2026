@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from app.config import settings
-from app.github_ingestor import GitHubIngestor
-from app.pdf_ingestor import PDFIngestor
-from app.utils import write_jsonl
+from ai.app.config import settings
+from ai.app.github_ingestor import GitHubIngestor
+from ai.app.pdf_ingestor import PDFIngestor
+from ai.app.utils import write_jsonl
 
 
 def parse_args() -> argparse.Namespace:

@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Iterable
 
-from app.models import DocumentRecord
+from ai.app.models import DocumentRecord
 
 SECRET_PATTERNS = [
     re.compile(r"ghp_[A-Za-z0-9]{20,}"),

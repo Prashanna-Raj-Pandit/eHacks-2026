@@ -4,8 +4,8 @@ from pathlib import Path
 
 import fitz
 
-from app.models import DocumentRecord
-from app.utils import clean_text, make_doc_id
+from ai.app.models import DocumentRecord
+from ai.app.utils import clean_text, make_doc_id
 
 
 class PDFIngestor:
