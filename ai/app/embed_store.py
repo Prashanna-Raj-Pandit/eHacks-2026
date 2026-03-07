@@ -6,8 +6,8 @@ import chromadb
 from chromadb.api.models.Collection import Collection
 from sentence_transformers import SentenceTransformer
 
-from app.config import settings
-from app.models import ChunkRecord
+from ai.app.config import settings
+from ai.app.models import ChunkRecord
 
 
 class EmbeddingStore:
