@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass
 class Settings:
@@ -20,6 +21,17 @@ class Settings:
     github_api_base: str = "https://api.github.com"
     github_timeout_seconds: int = 30
     max_file_size_bytes: int = 350_000
+
+    chunk_size: int = int(os.getenv("CHUNK_SIZE", "1200"))
+    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "200"))
+    phase1_documents_path: Path = PROJECT_ROOT / "data/processed/phase1_documents.jsonl"
+    phase2_chunks_path: Path = PROJECT_ROOT / "data/processed/phase2_chunks.jsonl"
+    chroma_dir: Path = PROJECT_ROOT / "data/chroma_db"
+
+    chroma_collection_name: str = os.getenv("CHROMA_COLLECTION_NAME", "career_kb")
+    embedding_model_name: str = os.getenv(
+        "EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     allowed_extensions: set[str] = field(
         default_factory=lambda: {
