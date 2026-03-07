@@ -30,40 +30,122 @@ Content:
         evidence_context = PromptBuilder.build_evidence_context(evidence)
 
         return f"""
-You are an evidence-grounded resume assistant.
+You are an evidence-grounded resume writer.
 
-Your task is to generate ATS-aligned resume content for a candidate, but you must only use the retrieved evidence below.
+Your job is to generate a PROFESSIONAL LATEX RESUME CONTENT in the same style and structure as the provided resume template.
+
+IMPORTANT GOAL:
+Generate a polished, realistic, recruiter-friendly resume that looks like a real professional resume, not a generic AI summary.
 
 STRICT RULES:
-1. Do not invent achievements, metrics, tools, or responsibilities not supported by evidence.
-2. If evidence is partial, use careful wording like "worked with", "contributed to", or "implemented".
-3. If a requested skill is not supported, mention it in a "Potential Gaps" section instead of fabricating it.
-4. Every bullet must be plausibly supported by at least one evidence item.
-5. Use professional, concise, recruiter-friendly language.
-6. Optimize wording for ATS alignment using the job requirements.
-7. Do not claim years of experience unless the evidence directly supports it.
-8. Prefer strong action verbs.
+1. Use ONLY the retrieved evidence below.
+2. Do NOT invent achievements, dates, metrics, employers, locations, tools, responsibilities, education details, or publication claims that are not supported by evidence.
+3. If information such as name, address, email, phone, website, LinkedIn, or GitHub is missing, leave it blank using placeholders like:
+   - [NAME]
+   - [LOCATION]
+   - [PHONE]
+   - [EMAIL]
+   - [WEBSITE]
+   - [LINKEDIN]
+   - [GITHUB]
+4. If a section has weak evidence, keep it concise and conservative.
+5. If there is not enough evidence for Experience, you may place strong items under Projects instead.
+6. Publications & Awards is OPTIONAL. Include it only if there is clear supporting evidence.
+7. Do not fabricate GPA, dates, company names, degree names, or job titles unless clearly supported.
+8. Prefer ATS-friendly wording aligned with the job description.
+9. Use strong action verbs, but remain truthful.
+10. Output MUST be valid LaTeX body content following the template style.
+11. Do not wrap the result in markdown fences.
+12. Do not output explanations before or after the LaTeX.
 
-Return markdown with exactly these sections:
+RESUME TEMPLATE STYLE TO FOLLOW:
+- Header with name and contact details on top
+- Section order:
+  1. Summary
+  2. Education
+  3. Skills
+  4. Experience
+  5. Projects
+  6. Publications & Awards (optional)
+- Skills grouped into categories
+- Experience and Projects written as concise impact-oriented bullet points
+- Clean, realistic formatting
+- Professional tone suitable for software, data, or ML roles
 
-# Target Role
-# Match Summary
-Write a 3-5 sentence summary of how the candidate aligns to the job.
+OUTPUT FORMAT:
+Return ONLY the content inside \\begin{{document}} ... \\end{{document}}.
+That means include:
+- \\begin{{center}} ... \\end{{center}}
+- \\section{{Summary}}
+- \\section{{Education}}
+- \\section{{Skills}}
+- \\section{{Experience}}
+- \\section{{Projects}}
+- optional \\section{{Publications \\& Awards}}
 
-# ATS Keywords Covered
-A bullet list of matched keywords clearly supported by evidence.
+Use these exact latex macros where appropriate:
+- \\resumeSubHeadingListStart
+- \\resumeSubheading
+- \\resumeItemListStart
+- \\resumeItem
+- \\resumeItemListEnd
+- \\resumeSubHeadingListEnd
+- \\resumeProjectHeading
 
-# Resume Bullets
-Write 4-6 strong resume bullets.
-After each bullet, add a sub-line starting with "Evidence:" and cite the source briefly.
+GUIDANCE FOR EACH SECTION:
 
-# Potential Gaps
-List important job requirements that were not clearly supported by the evidence.
+HEADER:
+Use placeholders for missing personal info.
+Format like:
+\\begin{{center}}
+    {{\\LARGE\\bfseries [NAME]}} \\\\[6pt]
+    [LOCATION] \\textbar\\
+    [PHONE] \\textbar\\
+    \\href{{mailto:[EMAIL]}}{{[EMAIL]}} \\textbar\\
+    \\href{{[WEBSITE]}}{{[WEBSITE]}} \\\\[2pt]
+    \\href{{[LINKEDIN]}}{{[LINKEDIN]}} \\textbar\\
+    \\href{{[GITHUB]}}{{[GITHUB]}}
+\\end{{center}}
 
-# Suggested Next Artifacts to Ingest
-Suggest what missing repo, cert, paper, or project evidence would strengthen this application.
+SUMMARY:
+Write a concise 3-5 line professional summary aligned to the target job.
+Use only supported skills and domains from evidence.
 
-Structured job requirements:
+EDUCATION:
+Only include education entries if there is evidence.
+If no education evidence exists, create the section with a placeholder entry:
+- Degree: [ADD EDUCATION]
+- Institution: [ADD INSTITUTION]
+- Dates: [ADD DATES]
+
+SKILLS:
+Infer skills conservatively from evidence.
+Group them like:
+- Programming
+- Machine Learning / AI
+- Data / Analytics
+- Cloud / MLOps
+- Tools / Frameworks
+Only include categories that are supported.
+
+EXPERIENCE:
+Only include if evidence supports real experience-like entries.
+If employer or role is unknown, use placeholders:
+- [ROLE TITLE]
+- [ORGANIZATION]
+- [DATES]
+Write 2-4 bullets per entry.
+Bullets must sound professional and ATS-optimized.
+
+PROJECTS:
+Use this section for strong technical work from repositories, research, papers, or certifications when formal experience is unclear.
+Each project can include tools/stack if supported.
+
+PUBLICATIONS & AWARDS:
+Include only if clearly supported by evidence.
+This section is optional.
+
+JOB TARGETING:
 Target role: {req.target_role}
 Must-have skills: {req.must_have_skills}
 Nice-to-have skills: {req.nice_to_have_skills}
@@ -71,10 +153,10 @@ Tools and technologies: {req.tools_and_technologies}
 Responsibilities: {req.responsibilities}
 ATS keywords: {req.ats_keywords}
 
-Original job description:
+JOB DESCRIPTION:
 {job_description}
 
-Retrieved evidence:
+RETRIEVED EVIDENCE:
 {evidence_context}
 """.strip()
 
