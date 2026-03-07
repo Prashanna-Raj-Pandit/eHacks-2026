@@ -9,3 +9,10 @@ class DocumentRecord(BaseModel):
     doc_id: str
     text: str
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ChunkRecord(BaseModel):
+    chunk_id: str
+    parent_doc_id: str
+    text: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
