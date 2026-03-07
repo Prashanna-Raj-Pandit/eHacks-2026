@@ -33,3 +33,4 @@ ai/models/*.onnx
 Thumbs.db
 .vscode/
 .idea/
+data/outputs

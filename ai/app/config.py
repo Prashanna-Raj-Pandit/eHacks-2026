@@ -12,6 +12,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass
 class Settings:
+    cohere_api_key: str = os.getenv("COHERE_API_KEY", "")
+    cohere_model: str = os.getenv("COHERE_MODEL", "command-r-plus-08-2024")
+
     github_token: str = os.getenv("GITHUB_TOKEN", "")
     github_username: str = os.getenv("GITHUB_USERNAME", "")
     output_dir: Path = Path(os.getenv("OUTPUT_DIR", "data/processed"))
@@ -27,6 +30,9 @@ class Settings:
     phase1_documents_path: Path = PROJECT_ROOT / "data/processed/phase1_documents.jsonl"
     phase2_chunks_path: Path = PROJECT_ROOT / "data/processed/phase2_chunks.jsonl"
     chroma_dir: Path = PROJECT_ROOT / "data/chroma_db"
+
+    phase3_output_dir: Path = PROJECT_ROOT / "data/outputs"
+    top_k_results: int = int(os.getenv("TOP_K_RESULTS", "12"))
 
     chroma_collection_name: str = os.getenv("CHROMA_COLLECTION_NAME", "career_kb")
     embedding_model_name: str = os.getenv(
@@ -69,6 +75,8 @@ class Settings:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.pdf_dir.mkdir(parents=True, exist_ok=True)
         self.local_repo_dir.mkdir(parents=True, exist_ok=True)
+        self.chroma_dir.mkdir(parents=True, exist_ok=True)
+        self.phase3_output_dir.mkdir(parents=True, exist_ok=True)
 
 
 settings = Settings()
