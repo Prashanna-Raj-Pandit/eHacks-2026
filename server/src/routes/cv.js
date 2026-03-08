@@ -30,7 +30,7 @@ router.post('/:id/generate', async (req, res) => {
   if (!jd) return res.status(404).json({ success: false, error: 'JD not found' })
 
   try {
-    const aiRes = await fetch('http://localhost:8000/api/generate-cv', {
+    const aiRes = await fetch('http://localhost:8000/api/docs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobDescription: jd.content }),
