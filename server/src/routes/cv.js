@@ -36,7 +36,6 @@ router.post('/:id/generate', async (req, res) => {
       body: JSON.stringify({ jobDescription: jd.content }),
     })
     const data = await aiRes.json()
-    console.log(data)
     jd.cv = data.cv
     await jd.save()
     res.json({ success: true, data: jd.cv })

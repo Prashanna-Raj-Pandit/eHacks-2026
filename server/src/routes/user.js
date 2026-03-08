@@ -28,9 +28,7 @@ router.post('/autofill-linkedin', async (req, res) => {
       method: 'POST',
       body: formData,
     })
-    
     const { data } = await aiRes.json()
-    console.log('Data', data)
 
     // save to DB — must be before res.json
     const updatedUser = await User.findOneAndUpdate(
