@@ -1,0 +1,112 @@
+{
+  "user": {
+    "firstName": "Prashanna",
+    "lastName": "Raj Pandit",
+    "email": "prashannaraj5@gmail.com",
+    "phone": "",
+    "bio": "A graduate student in Computer Science passionate about AI, machine learning, and deep learning, with a focus on building end-to-end ML pipelines. Experienced in data analysis, feature engineering, model development, and deployment. Published research on automation of driving license tests using computer vision and image processing.",
+    "location": "Edwardsville, Illinois, United States",
+    "skills": [
+      "Amazon EC2",
+      "S3",
+      "VPC",
+      "IAM",
+      "AWS Lambda",
+      "EventBridge",
+      "SNS",
+      "SQS",
+      "Load Balancing",
+      "Machine Learning",
+      "Deep Learning",
+      "Computer Vision",
+      "Image Processing",
+      "Data Science",
+      "MLOps",
+      "Time Series Analysis",
+      "Software Engineering",
+      "CI/CD",
+      "Docker",
+      "REST APIs",
+      "Data Mining",
+      "Data Processing",
+      "Feature Engineering",
+      "Exploratory Data Analysis",
+      "Model Evaluation",
+      "Python",
+      "Scikit-learn",
+      "Image Classification",
+      "AI in Healthcare",
+      "Clinical Decision Support",
+      "Ethical AI",
+      "ETL",
+      "OpenPose",
+      "MediaPipe",
+      "Pandas",
+      "NumPy",
+      "OpenCV",
+      "Signal Processing",
+      "Cubic Spline Interpolation",
+      "Savitzky–Golay Filtering",
+      "Gait Analysis",
+      "Deep Learning Models",
+      "BiLSTM",
+      "Bayesian Hyperparameter Optimization",
+      "Optuna",
+      "AWS",
+      "ECR",
+      "EC2",
+      "GitHub Actions",
+      "CloudWatch",
+      "Flask",
+      "SQL",
+      "JSON",
+      "Bash Scripting",
+      "Git",
+      "Linux"
+    ]
+  },
+  "workExperience": [
+    {
+      "company": "Southern Illinois University Edwardsville",
+      "role": "Graduate Research and Teaching Assistant",
+      "startDate": "2026-01",
+      "endDate": "",
+      "current": true,
+      "description": "Assisted students in software engineering, data mining, and healthcare computing courses. Guided students in software design, CI/CD, Docker, and REST API integration. Mentored data processing, feature engineering, and machine learning algorithm implementation."
+    },
+    {
+      "company": "Southern Illinois University Edwardsville",
+      "role": "Research Assistant - Machine Learning",
+      "startDate": "2025-01",
+      "endDate": "2026-04",
+      "current": false,
+      "description": "Built an ETL pipeline for skeletal keypoint extraction from gait videos, using OpenPose and MediaPipe. Applied signal processing and feature engineering to time-series data. Developed and deployed an autism classification model using BiLSTM and CI/CD on AWS with Docker, Flask, and GitHub Actions."
+    },
+    {
+      "company": "Vrit Technologies",
+      "role": "Software Engineer",
+      "startDate": "2023-01",
+      "endDate": "2024-07",
+      "current": false,
+      "description": "Designed and deployed a Flask web application with REST APIs and AWS S3 integration, improving performance and SEO. Implemented CI/CD with GitHub Actions and Docker. Created SQL-driven data workflows and JSON APIs for analytics and data exchange."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Southern Illinois University Edwardsville",
+      "degree": "Master's degree",
+      "field": "Computer Science",
+      "startDate": "2024-08",
+      "endDate": "2026-05",
+      "current": false
+    },
+    {
+      "institution": "Tribhuvan University, IOE, Pulchowk Campus",
+      "degree": "Bachelor's",
+      "field": "Electronics Communication and Information Engineering",
+      "startDate": "2018-11",
+      "endDate": "2023-03",
+      "current": false
+    }
+  ]
+}

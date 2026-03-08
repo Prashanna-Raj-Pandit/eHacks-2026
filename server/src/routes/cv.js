@@ -54,9 +54,18 @@ router.post('/:id/generate', async (req, res) => {
     const documents = await Document.find()
 
     const formData = new FormData()
+
+    // required fields
     formData.append('job_description', jd.content)
     formData.append('target_role', jd.title)
 
+    // github user if available
+    if (user?.githubUsername) {
+      formData.append('github_user', user.githubUsername)
+      formData.append('repo_limit', '3')
+    }
+
+    // uploaded pdf files
     for (const doc of documents) {
       const filePath = path.join(process.cwd(), 'public', 'uploads', doc.filename)
       if (fs.existsSync(filePath)) {
@@ -66,6 +75,7 @@ router.post('/:id/generate', async (req, res) => {
       }
     }
 
+    // linkedin pdf
     if (user?.linkedinPdf) {
       const linkedinPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
       if (fs.existsSync(linkedinPath)) {
@@ -74,6 +84,8 @@ router.post('/:id/generate', async (req, res) => {
         formData.append('files', blob, user.linkedinPdf)
       }
     }
+
+    console.log(formData)
 
     const aiRes = await fetch('http://localhost:8000/api/resume-generator', {
       method: 'POST',
