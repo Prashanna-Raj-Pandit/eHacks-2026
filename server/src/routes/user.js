@@ -17,7 +17,6 @@ router.post('/autofill-linkedin', async (req, res) => {
       return res.status(400).json({ success: false, error: 'No LinkedIn PDF uploaded' })
     }
 
-    // read pdf file and send as multipart to AI service
     const pdfPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
     const pdfBuffer = fs.readFileSync(pdfPath)
     const blob = new Blob([pdfBuffer], { type: 'application/pdf' })
@@ -25,14 +24,15 @@ router.post('/autofill-linkedin', async (req, res) => {
     const formData = new FormData()
     formData.append('file', blob, user.linkedinPdf)
 
-    // send to AI
-    const aiRes = await fetch('http://localhost:8000/api/extract-linkedin', {
+    const aiRes = await fetch('http://localhost:8000/api/profile-parser', {
       method: 'POST',
       body: formData,
     })
+    
     const { data } = await aiRes.json()
+    console.log('Data', data)
 
-    // save to DB
+    // save to DB — must be before res.json
     const updatedUser = await User.findOneAndUpdate(
       {},
       {
@@ -57,7 +57,7 @@ router.post('/autofill-linkedin', async (req, res) => {
       data.education.map(edu => ({ ...edu, source: 'linkedin' }))
     )
 
-    res.json({
+    return res.json({
       success: true,
       data: { user: updatedUser, workExperience, education }
     })
@@ -67,7 +67,6 @@ router.post('/autofill-linkedin', async (req, res) => {
     res.status(500).json({ success: false, error: err.message })
   }
 })
-
 
 // POST upload linkedin pdf
 router.post('/linkedin', UploadMiddleware().single('linkedinPdf'), async (req, res) => {
