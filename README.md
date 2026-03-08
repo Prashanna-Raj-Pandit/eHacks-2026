@@ -1,279 +1,373 @@
-# eHacks
+# Evidence-Based Resume Generator
 
-```
-eHacks-2026/
-├─ .gitignore
-├─ .idea/
-├─ COMMITS.md
-├─ README.md
-├─ ai/
-│  ├─ __init__.py
-│  └─ app/
-│     ├─ __init__.py
-│     ├─ config.py
-│     ├─ github_ingestor.py
-│     ├─ ingest.py
-│     ├─ models.py
-│     ├─ pdf_ingestor.py
-│     ├─ requirements.txt
-│     ├─ utils.py
-│     └─ data/
-│        └─ __init__.py
-├─ client/
-│  ├─ .gitignore
-│  ├─ README.md
-│  ├─ eslint.config.js
-│  ├─ index.html
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ tsconfig.app.json
-│  ├─ tsconfig.json
-│  ├─ tsconfig.node.json
-│  ├─ vite.config.ts
-│  ├─ public/
-│  │  └─ vite.svg
-│  └─ src/
-│     ├─ App.tsx
-│     ├─ index.css
-│     ├─ main.tsx
-│     ├─ pages/
-│     │  ├─ Messages.tsx
-│     │  └─ Upload.tsx
-│     └─ services/
-│        ├─ api.ts
-│        ├─ messages.ts
-│        └─ upload.ts
-├─ data/
-│  ├─ processed/
-│  │  └─ phase1_documents.jsonl
-│  └─ raw/
-│     └─ pdfs/
-│        ├─ attention.pdf
-│        └─ paper.pdf
-└─ server/
-   ├─ package-lock.json
-   ├─ package.json
-   └─ src/
-      ├─ index.js
-      ├─ middlewares/
-      │  └─ upload.js
-      ├─ routes/
-      │  ├─ message.js
-      │  └─ upload.js
-      └─ utils/
-         └─ http-exception.js
-```
+## Overview
+
+The hiring landscape has changed dramatically in recent years. Most companies no longer manually review resumes first — they rely on AI-driven Applicant Tracking Systems (ATS) to automatically filter candidates before a human ever sees the application.
+
+While this improves efficiency for recruiters, it creates major problems for applicants:
+	•	Qualified candidates are often rejected because their resume does not perfectly match ATS keywords.
+	•	Applicants forget projects or skills they worked on years ago.
+	•	Many candidates exaggerate or fabricate experience to pass automated filters.
+	•	People with strong real-world evidence (GitHub projects, research papers, certifications) struggle to summarize everything accurately in a resume.
+
+This project aims to solve that problem by building an AI-powered evidence-based resume generator that automatically gathers a candidate’s real work and generates a tailored resume aligned with a specific job description.
+
+Instead of manually writing resumes, this system builds a knowledge base of the candidate’s actual work and uses Retrieval-Augmented Generation (RAG) to create a resume grounded in real evidence.
+
 
 ## Problem Statement
 
-**Real Problem:** People have proof of their skills scattered across:
-- GitHub repositories
-- Project documentation  
-- PDF resumes and portfolios
-- Work samples
+In today’s job market:
+	•	Recruiters receive hundreds or thousands of applications.
+	•	Most resumes are filtered by AI systems before human review.
+	•	ATS systems rank resumes based on keyword similarity with job descriptions.
 
-**The Pain:** When applying for jobs, they cannot quickly surface and connect their existing proof of skills to a job description. They end up writing generic bullet points instead of evidence-backed accomplishments.
+This leads to several issues:
+	1.	Qualified candidates get rejected because their resume wording doesn’t match ATS keywords.
+	2.	Applicants forget past work such as GitHub projects, academic work, or research they completed years earlier.
+	3.	Candidates exaggerate experience to match job requirements.
+	4.	Evidence of skills exists online, but resumes fail to capture it.
 
-**The Opportunity:** Build a tool that extracts, chunks, embeds, and retrieves skill evidence in seconds.
+For example, many developers may have:
+	•	dozens of GitHub repositories
+	•	research papers
+	•	certifications
+	•	academic projects
 
----
+Yet their resume only lists a small portion of this work.
 
-## The Solution
+The core question becomes:
 
-A 6-phase MVP that:
-1. Ingests GitHub repos and PDFs
-2. Chunks and embeds content
-3. Stores in vector database (ChromaDB)
-4. Retrieves relevant skill evidence
-5. Generates resume bullets from retrieved chunks
-6. Demonstrates with real job description → bullets + evidence
+How can we automatically transform a person’s real work into an ATS-optimized resume tailored to a specific job description?
 
----
+## Solution
 
-## Build Plan & Phases
-
-### Phase 1: Build Ingestion
-
-**GitHub repo text files**
-- Clone or fetch public repos
-- Extract all `.md`, `.txt`, `.py`, `.js` files
-- Parse and clean text
-
-**PDF text extraction**
-- Use PyPDF or similar
-- Extract text from PDFs
-- Preserve structure (headings, bullet points)
-
-### Phase 2: Chunk and Embed
-
-- Split content into meaningful chunks (300-500 tokens)
-- Generate embeddings using OpenAI API or local model
-- Preserve metadata (source file, line numbers, file type)
-
-### Phase 3: Store in ChromaDB
-
-- Initialize persistent ChromaDB
-- Store vectors with metadata
-- Enable fast retrieval
-
-### Phase 4: Create Query Function
-
-- **Ask skill question** – "What is your experience with Python async?"
-- **Retrieve top chunks** – Get top 5-10 most relevant chunks
-- **Return evidence** – Show exact lines with source files
-
-### Phase 5: Resume Bullet Generation
-
-- Take retrieved chunks
-- Generate 2-3 strong resume bullets
-- Format as accomplishment statements
-- **Critical:** Use only retrieved chunks (no hallucination)
-
-### Phase 6: Prepare One Strong Demo Case
-
-**Demo Flow:**
-1. Paste a real job description
-2. Extract required skills
-3. Query for each skill
-4. Generate bullets with evidence
-5. Show the exact source lines
-
----
-
-## Biggest Success Factors
-
-**Judges will care LESS about:**
-- Complexity of architecture
-- Number of features
-- Fancy UI
-
-**Judges WILL care about:**
-✅ **Clear Problem** – People cannot surface skills fast  
-✅ **Practical Solution** – Takes skill proof → generates bullets  
-✅ **Working Demo** – End-to-end, real job description input  
-✅ **Ethical Angle** – No hallucination, evidence-based only  
-✅ **Visible Usefulness** – Someone would actually use this  
-
----
-
-## Why This Idea is Strong
-
-**The Core Insight:**
-People already have proof of skill. The problem isn't *what* they've done—it's that they cannot *surface it fast*.
-
-**The Story:**
-"I built a tool that takes your GitHub repos and PDFs, finds proof of your skills, and generates resume bullets with evidence in seconds. No more generic bullet points. Just facts from your own work."
-
-**This solves a real pain point** that hiring managers, recruiters, and job applicants all face.
-
----
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Language | Python 3.9+ |
-| Ingestion | `PyGithub`, `PyPDF2` |
-| Chunking | `langchain` or custom |
-| Embeddings | OpenAI API (or local: `sentence-transformers`) |
-| Vector DB | ChromaDB (persistent) |
-| Backend | FastAPI |
-| Demo | CLI + Jupyter notebook |
-
----
-
-## Project Structure
+This project builds an AI system that automatically converts a candidate’s real work into a structured knowledge base and generates an ATS-optimized resume tailored to a job description.
 
 ```
-skill-surface-mvp/
-├── README.md                 # This file
-├── requirements.txt          # Python dependencies
-├── config.py                 # Configuration (API keys, paths)
-├── ingestion.py              # Phase 1: GitHub + PDF extraction
-├── chunking.py               # Phase 2: Chunking & embedding
-├── storage.py                # Phase 3: ChromaDB storage
-├── query_engine.py           # Phase 4: Query & retrieval
-├── bullet_generator.py        # Phase 5: Resume generation
-├── demo.py                   # Phase 6: Full demo
-├── chroma_data/              # Vector DB storage (persistent)
-├── sample_data/              # Sample GitHub repos, PDFs, JD
-└── notebooks/                # Jupyter demos
-    └── demo.ipynb
-```
+The system:
+	1.	Collects evidence from sources such as:
+	•	GitHub repositories
+	•	research papers
+	•	certifications
+	•	portfolio documents
+	2.	Converts this information into a vector knowledge base
+	3.	Matches the knowledge base against a job description
+	4.	Generates a custom resume supported by real evidence
 
----
+This approach ensures that:
+	•	resumes reflect actual work
+	•	ATS keywords match the job description
+	•	candidates don’t forget past projects
+	•	hallucinated claims are minimized
 
-
-Evidence: "Built REST API with FastAPI, includes authentication and rate limiting"
-Source: my-repo/api/main.py (lines 1-200)
-
-BULLET GENERATED:
-• Developed FastAPI backend with JWT authentication and rate limiting, 
-  serving 50K daily requests with 99.9% uptime
 
 ```
 
----
+# Key Idea: Evidence-Based Resume Generation
 
-## Key Constraints (Critical for MVP)
+```
 
-1. **Evidence-based only** – Never generate bullets without retrieved chunks
-2. **Source attribution** – Always show where the evidence came from
-3. **No hallucination** – If skill not found, say "No evidence found"
-4. **Real demo** – Use actual GitHub repos and job descriptions
-5. **Working end-to-end** – From repo URL to final bullets in <30 seconds
+Traditional resume tools work like this:
 
----
+Job Description → AI → Resume
 
-## Success Metrics
+This often leads to hallucinations or generic content.
 
-✅ Tool ingests 1+ GitHub repos  
-✅ Tool chunks and embeds content  
-✅ Tool stores and retrieves vectors  
-✅ Tool generates bullets with evidence  
-✅ Demo runs end-to-end in <1 minute  
-✅ Evidence is traceable to source files  
+Our approach uses Retrieval-Augmented Generation (RAG):
 
----
+Candidate Evidence → Vector Database
+                    ↓
+           Job Description Query
+                    ↓
+        Retrieve Relevant Evidence
+                    ↓
+             AI Resume Generator
 
-## Ethical Considerations
+The AI only writes the resume based on retrieved evidence, making the result more trustworthy and personalized.
 
-**No Hallucination:**
-- Every bullet point is generated ONLY from retrieved chunks
-- If no relevant evidence found, explicitly say so
-- Never fabricate skills or accomplishments
+```
 
-**Transparency:**
-- Show exact source files and line numbers
-- Let users verify the evidence themselves
-- Make it clear where the information came from
+```
+System Architecture
 
-**User Control:**
-- Users choose what repos/PDFs to ingest
-- Users can review generated bullets before using them
-- No unauthorized data scraping
+The system consists of three major phases.
 
----
+Data Sources
+(GitHub, Papers, Certificates, PDFs)
 
-## The Pitch (30 seconds)
+        ↓
 
-> "Job applications require proof of skills, but most people can't surface it fast. They end up writing generic bullet points. 
->
-> I built a tool that takes your GitHub repos and PDFs, finds concrete proof of your skills, and generates resume bullets with evidence in seconds. 
->
-> No hallucination. Just facts from your own work. 
->
-> Watch: I paste a job description → the tool finds matching skills in my repos → generates bullets with exact source lines → ready to apply."
+Phase 1: Document Ingestion
+Extract text and metadata
 
----
+        ↓
 
-## Next Steps
+Phase 2: Vector Indexing
+Chunk documents and create embeddings
 
-1. **Phase 1-2:** Get ingestion and chunking working
-2. **Phase 3:** Verify storage in ChromaDB
-3. **Phase 4:** Build query function with retrieval
-4. **Phase 5:** Implement bullet generation
-5. **Phase 6:** Create polished demo
-6. **Final:** Record 2-minute demo video
+        ↓
 
----
+Phase 3: Job-Aware Resume Generation
+Retrieve relevant evidence and generate resume
+
+        ↓
+
+Output:
+• ATS optimized resume (LaTeX)
+• Structured resume JSON
+
+
+```
+
+
+Phase 1: Document Ingestion
+
+The first phase collects information from multiple sources and converts them into structured documents.
+
+Supported sources include:
+	•	GitHub repositories
+	•	research papers
+	•	certifications
+	•	portfolio documents
+	•	PDFs
+
+GitHub Ingestion
+
+The system uses the GitHub API to:
+	•	fetch repositories
+	•	scan repository file trees
+	•	extract useful files such as:
+
+.py
+.md
+.ipynb
+.json
+.yaml
+
+Unnecessary files are ignored:
+
+node_modules
+build directories
+images
+binaries
+
+Each file becomes a document record containing text and metadata.
+
+# 
+
+PDF Processing
+
+PDF documents are processed using PyMuPDF (fitz) to extract:
+	•	research papers
+	•	certifications
+	•	technical reports
+	•	resume documents
+
+Text is extracted and stored as structured records.
+
+
+
+# Output
+
+The result of Phase 1 is a dataset like:
+
+phase1_documents.jsonl
+
+Each entry contains:
+
+doc_id
+text
+metadata
+
+This forms the candidate knowledge base.
+
+
+## Phase 2: Chunking and Embedding
+
+Documents are split into smaller segments called chunks so that they can be searched efficiently.
+
+Chunking Strategy
+	•	Chunk size: 200–300 words
+	•	Overlap: 20%
+
+Overlap ensures that context is preserved between chunks.
+
+
+Embedding Model
+
+Each chunk is converted into a vector embedding using:
+
+Sentence Transformers
+all-MiniLM-L6-v2
+
+Embedding dimension:
+
+384
+
+These embeddings capture the semantic meaning of the text.
+
+
+Vector Database
+
+Embeddings are stored in ChromaDB, which allows efficient semantic search.
+
+ChromaDB uses the HNSW (Hierarchical Navigable Small World) algorithm for fast approximate nearest neighbor search.
+
+
+
+## Phase 3: Job-Aware Resume Generation
+
+This phase uses Retrieval-Augmented Generation.
+
+Step 1: Job Description Parsing
+
+The system analyzes the job description to extract:
+	•	role title
+	•	required skills
+	•	technologies
+	•	responsibilities
+	•	ATS keywords
+
+⸻
+
+Step 2: Evidence Retrieval
+
+The job description is converted into an embedding vector.
+
+The vector database retrieves the Top-K most relevant chunks.
+
+Top K = 5
+Similarity metric = Cosine similarity
+
+These retrieved chunks represent the candidate’s most relevant experience.
+
+
+Step 3: Resume Generation
+
+The AI model receives:
+	•	job description
+	•	retrieved evidence
+	•	structured resume template
+
+It generates:
+	•	ATS-optimized resume content
+	•	supported by real evidence
+
+
+
+## Resume Rendering
+
+The final resume is generated as LaTeX.
+
+Advantages of LaTeX:
+	•	professional formatting
+	•	ATS-friendly
+	•	easy PDF generation
+	•	consistent layout
+
+Empty sections are automatically removed to avoid formatting errors.
+
+
+## Additional Feature: LinkedIn Resume Parser
+
+The system also includes a profile parser.
+
+Users can upload a resume or LinkedIn export, and the system extracts structured information.
+
+Example output:
+
+{
+  user: {...},
+  workExperience: [...],
+  education: [...]
+}
+
+This structured data can power:
+	•	portfolio websites
+	•	structured candidate profiles
+	•	resume builders
+
+
+
+API System
+
+The backend exposes two main endpoints using FastAPI.
+
+Profile Parser
+
+POST /api/profile-parser
+
+Input:
+	•	LinkedIn or resume PDF
+
+Output:
+	•	structured JSON profile
+
+
+
+Resume Generator
+
+POST /api/resume-generator
+
+Input:
+	•	job description
+	•	GitHub username (optional)
+	•	repository list (optional)
+	•	uploaded documents
+
+Output:
+	•	LaTeX resume
+	•	structured JSON resume
+
+
+# Technology Stack
+
+Backend
+	•	Python
+	•	FastAPI
+
+AI / NLP
+	•	Sentence Transformers
+	•	Retrieval-Augmented Generation (RAG)
+	•	Cohere LLM
+
+Vector Database
+	•	ChromaDB
+
+Data Processing
+	•	PyMuPDF
+	•	GitHub API
+
+Frontend
+	•	React
+	•	TypeScript
+	•	Vite
+
+
+
+Key Features
+
+Evidence-based resume generation
+
+Resumes are generated from real work evidence rather than hallucinated content.
+
+ATS optimization
+
+The system aligns resumes with job descriptions to improve ATS compatibility.
+
+Multi-source knowledge ingestion
+
+Supports GitHub, research papers, certifications, and documents.
+
+Semantic retrieval
+
+Uses embeddings and vector search to match relevant experience.
+
+Automated resume generation
+
+Produces professional resumes automatically.
+
+Portfolio data extraction
+
+Converts resumes into structured JSON for portfolio websites.
