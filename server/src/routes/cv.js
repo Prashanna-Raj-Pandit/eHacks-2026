@@ -1,5 +1,9 @@
 import { Router } from 'express'
 import JD from '../models/jd.js'
+import fs from 'fs'
+import path from 'path'
+import Document from '../models/document.js'
+import User from '../models/user.js'
 
 const router = Router()
 
@@ -25,21 +29,55 @@ router.delete('/:id', async (req, res) => {
   res.json({ success: true })
 })
 
+// inside the generate route
 router.post('/:id/generate', async (req, res) => {
   const jd = await JD.findById(req.params.id)
   if (!jd) return res.status(404).json({ success: false, error: 'JD not found' })
 
   try {
-    const aiRes = await fetch('http://localhost:8000/api/docs', {
+    // get user and their uploaded documents
+    const user = await User.findOne()
+    const documents = await Document.find()
+
+    const formData = new FormData()
+
+    // job description fields
+    formData.append('job_description', jd.content)
+    formData.append('target_role', jd.title)
+
+    // append all uploaded reference documents
+    for (const doc of documents) {
+      const filePath = path.join(process.cwd(), 'public', 'uploads', doc.filename)
+      if (fs.existsSync(filePath)) {
+        const buffer = fs.readFileSync(filePath)
+        const blob = new Blob([buffer], { type: doc.mimetype })
+        formData.append('files', blob, doc.originalname)
+      }
+    }
+
+    // append linkedin pdf if exists
+    if (user?.linkedinPdf) {
+      const linkedinPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
+      if (fs.existsSync(linkedinPath)) {
+        const buffer = fs.readFileSync(linkedinPath)
+        const blob = new Blob([buffer], { type: 'application/pdf' })
+        formData.append('files', blob, user.linkedinPdf)
+      }
+    }
+
+    const aiRes = await fetch('http://localhost:8000/api/resume-generator', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobDescription: jd.content }),
+      body: formData,
     })
+
     const data = await aiRes.json()
+    console.log(data)
     jd.cv = data.cv
     await jd.save()
     res.json({ success: true, data: jd.cv })
+
   } catch (err) {
+    console.error(err)
     res.status(500).json({ success: false, error: 'AI service unreachable' })
   }
 })
