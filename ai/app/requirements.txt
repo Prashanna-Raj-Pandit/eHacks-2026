@@ -8,3 +8,10 @@ chromadb==0.5.5
 sentence-transformers==3.0.1
 langchain-text-splitters==0.2.2
 cohere==5.13.11
+
+
+# api
+
+fastapi==0.115.0
+uvicorn==0.30.6
+python-multipart==0.0.9
