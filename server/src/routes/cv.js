@@ -71,10 +71,9 @@ router.post('/:id/generate', async (req, res) => {
     })
 
     const data = await aiRes.json()
-    console.log(data)
-    jd.cv = data.cv
-    await jd.save()
-    res.json({ success: true, data: jd.cv })
+jd.cv = data.data.latex
+await jd.save()
+res.json({ success: true, data: jd.cv })
 
   } catch (err) {
     console.error(err)

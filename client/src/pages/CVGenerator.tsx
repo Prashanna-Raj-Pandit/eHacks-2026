@@ -204,10 +204,9 @@ export default function CVGenerator() {
                 )}
               </div>
               {active.cv ? (
-                <div
-                  className="bg-gray-900 rounded-xl p-6 text-sm text-gray-200 leading-relaxed whitespace-pre-wrap flex-1"
-                  dangerouslySetInnerHTML={{ __html: active.cv }}
-                />
+                <pre className="bg-gray-900 rounded-xl p-6 text-xs text-gray-300 leading-relaxed overflow-auto flex-1 whitespace-pre-wrap">
+                  {active.cv}
+                </pre>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-600">
                   <span className="text-4xl mb-3">📄</span>
