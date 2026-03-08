@@ -94,8 +94,8 @@ router.get('/profile', async (req, res) => {
 router.put('/profile', async (req, res) => {
   let user = await User.findOne()
   if (!user) user = await User.create({})
-  const { firstName, lastName, email, phone, bio, location } = req.body
-  user.set({ firstName, lastName, email, phone, bio, location })
+  const { firstName, lastName, email, phone, bio, location, githubUsername, skills } = req.body
+  user.set({ firstName, lastName, email, phone, bio, location, githubUsername, skills })
   await user.save()
   res.json({ success: true, data: user })
 })
