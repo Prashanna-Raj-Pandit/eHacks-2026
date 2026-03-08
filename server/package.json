@@ -4,8 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "jest": {
+    "transform": {}
   },
   "keywords": [],
   "author": "",
@@ -19,5 +22,8 @@
     "mongoose": "^9.2.4",
     "multer": "^2.1.1",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
   }
 }
