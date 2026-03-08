@@ -5,6 +5,7 @@ const JDSchema = new mongoose.Schema({
   content: { type: String, default: '' },
   cv: { type: String, default: null },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  pdfAvailable: { type: Boolean, default: false }
 }, { timestamps: true })
 
 export default mongoose.model('JD', JDSchema)

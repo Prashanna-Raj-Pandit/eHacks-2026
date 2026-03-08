@@ -1,0 +1,112 @@
+{
+  "user": {
+    "firstName": "Prashanna",
+    "lastName": "Raj Pandit",
+    "email": "prashannaraj5@gmail.com",
+    "phone": "",
+    "bio": "Graduate student in Computer Science with a passion for AI, machine learning, and deep learning. Experienced in building end-to-end ML pipelines, from data analysis to model deployment. Skilled in research and teaching assistance, with a focus on data science, ML, and MLOps.",
+    "location": "Edwardsville, Illinois, United States",
+    "skills": [
+      "Amazon EC2",
+      "S3",
+      "VPC",
+      "IAM",
+      "AWS Lambda",
+      "EventBridge",
+      "SNS",
+      "SQS",
+      "Load Balancing",
+      "Machine Learning",
+      "Deep Learning",
+      "Computer Vision",
+      "Image Processing",
+      "Data Analysis",
+      "Feature Engineering",
+      "Model Development",
+      "Evaluation",
+      "Deployment",
+      "Software Engineering",
+      "CI/CD",
+      "Docker",
+      "REST API",
+      "Data Mining",
+      "Data Processing",
+      "Exploratory Data Analysis",
+      "Python",
+      "Scikit-learn",
+      "Image Classification",
+      "AI in Healthcare",
+      "Clinical Decision Support",
+      "ETL",
+      "OpenPose",
+      "MediaPipe",
+      "Python",
+      "Pandas",
+      "NumPy",
+      "OpenCV",
+      "Signal Processing",
+      "Feature Extraction",
+      "Deep Learning Models",
+      "BiLSTM",
+      "Bayesian Hyperparameter Optimization",
+      "Optuna",
+      "AWS",
+      "Docker (ECR)",
+      "Flask",
+      "EC2",
+      "GitHub Actions",
+      "CloudWatch",
+      "Flask",
+      "Sheety REST APIs",
+      "SQL",
+      "JSON",
+      "Linux",
+      "Bash Scripting",
+      "Git"
+    ]
+  },
+  "workExperience": [
+    {
+      "company": "Southern Illinois University Edwardsville",
+      "role": "Graduate Research And Teaching Assistant",
+      "startDate": "2026-01",
+      "endDate": "",
+      "current": true,
+      "description": "Assisted in courses like CS 325: Software Engineering, CS 584: Data Mining, and CS 490: Computing in Healthcare. Guided students in software design, CI/CD, Docker, REST APIs, data processing, machine learning, and AI applications."
+    },
+    {
+      "company": "Southern Illinois University Edwardsville",
+      "role": "Research Assistant - Machine Learning",
+      "startDate": "2025-01",
+      "endDate": "",
+      "current": true,
+      "description": "Built ETL pipelines for skeletal keypoint extraction and feature engineering using Python and computer vision tools. Developed and deployed ML models for autism classification with CI/CD integration on AWS."
+    },
+    {
+      "company": "Vrit Technologies",
+      "role": "Software Engineer",
+      "startDate": "2023-01",
+      "endDate": "2024-07",
+      "current": false,
+      "description": "Designed and deployed web applications with improved performance and SEO. Implemented CI/CD, Docker, and REST APIs. Worked on data workflows, automation, and collaboration in Linux environments."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Southern Illinois University Edwardsville",
+      "degree": "Master's degree",
+      "field": "Computer Science",
+      "startDate": "2024-08",
+      "endDate": "2026-05",
+      "current": false
+    },
+    {
+      "institution": "Tribhuvan University, IOE, Pulchowk Campus",
+      "degree": "Bachelor's",
+      "field": "Electronics Communication and Information Engineering",
+      "startDate": "2018-11",
+      "endDate": "2023-03",
+      "current": false
+    }
+  ]
+}

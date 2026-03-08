@@ -33,34 +33,40 @@ router.delete('/:id', async (req, res) => {
 router.post('/github/:username', async (req, res) => {
   try {
     const { username } = req.params
-    const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=20`)
+
+    const reposRes = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=stars`)
+    if (!reposRes.ok) throw new Error('GitHub API error')
     const repos = await reposRes.json()
 
-    if (!Array.isArray(repos)) return res.status(400).json({ success: false, error: 'Invalid GitHub username' })
-
-    const projects = await Promise.all(repos.map(async repo => {
-      // fetch readme
+    const projects = await Promise.all(repos.map(async (repo) => {
       let readme = ''
       try {
         const readmeRes = await fetch(`https://api.github.com/repos/${username}/${repo.name}/readme`, {
           headers: { Accept: 'application/vnd.github.v3.raw' }
         })
         if (readmeRes.ok) readme = await readmeRes.text()
-      } catch { }
+      } catch { /* no readme */ }
 
-      return Project.create({
-        title: repo.name,
-        description: repo.description || '',
-        techStack: repo.topics || [],
-        githubUrl: repo.html_url,
-        stars: repo.stargazers_count,
-        readme: readme.slice(0, 2000), // limit readme size
-        source: 'github',
-      })
+      // upsert by githubUrl — no duplicates on re-import
+      return Project.findOneAndUpdate(
+        { githubUrl: repo.html_url },
+        {
+          title: repo.name,
+          description: repo.description || '',
+          techStack: repo.language ? [repo.language] : [],
+          liveUrl: repo.homepage || '',
+          githubUrl: repo.html_url,
+          stars: repo.stargazers_count,
+          readme,
+          source: 'github',
+        },
+        { upsert: true, new: true }
+      )
     }))
 
-    res.status(201).json({ success: true, data: projects })
+    res.json({ success: true, data: projects })
   } catch (err) {
+    console.error(err)
     res.status(500).json({ success: false, error: err.message })
   }
 })

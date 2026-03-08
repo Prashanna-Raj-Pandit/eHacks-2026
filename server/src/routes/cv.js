@@ -8,44 +8,64 @@ import User from '../models/user.js'
 const router = Router()
 
 router.get('/', async (req, res) => {
-  const jds = await JD.find().sort({ createdAt: -1 })
-  res.json({ success: true, data: jds })
+  try {
+    const jds = await JD.find().sort({ createdAt: -1 })
+    res.json({ success: true, data: jds })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 router.post('/', async (req, res) => {
-  const { title, content } = req.body
-  const jd = await JD.create({ title, content })
-  res.status(201).json({ success: true, data: jd })
+  try {
+    const { title, content } = req.body
+    const jd = await JD.create({ title, content })
+    res.status(201).json({ success: true, data: jd })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 router.put('/:id', async (req, res) => {
-  const { title, content } = req.body
-  const jd = await JD.findByIdAndUpdate(req.params.id, { title, content }, { new: true })
-  res.json({ success: true, data: jd })
+  try {
+    const { title, content } = req.body
+    const jd = await JD.findByIdAndUpdate(req.params.id, { title, content }, { new: true })
+    res.json({ success: true, data: jd })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 router.delete('/:id', async (req, res) => {
-  await JD.findByIdAndDelete(req.params.id)
-  res.json({ success: true })
+  try {
+    await JD.findByIdAndDelete(req.params.id)
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
-// inside the generate route
 router.post('/:id/generate', async (req, res) => {
-  const jd = await JD.findById(req.params.id)
-  if (!jd) return res.status(404).json({ success: false, error: 'JD not found' })
-
   try {
-    // get user and their uploaded documents
+    const jd = await JD.findById(req.params.id)
+    if (!jd) return res.status(404).json({ success: false, error: 'JD not found' })
+
     const user = await User.findOne()
     const documents = await Document.find()
 
     const formData = new FormData()
 
-    // job description fields
+    // required fields
     formData.append('job_description', jd.content)
     formData.append('target_role', jd.title)
 
-    // append all uploaded reference documents
+    // github user if available
+    if (user?.githubUsername) {
+      formData.append('github_user', user.githubUsername)
+      formData.append('repo_limit', '3')
+    }
+
+    // uploaded pdf files
     for (const doc of documents) {
       const filePath = path.join(process.cwd(), 'public', 'uploads', doc.filename)
       if (fs.existsSync(filePath)) {
@@ -55,7 +75,7 @@ router.post('/:id/generate', async (req, res) => {
       }
     }
 
-    // append linkedin pdf if exists
+    // linkedin pdf
     if (user?.linkedinPdf) {
       const linkedinPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
       if (fs.existsSync(linkedinPath)) {
@@ -65,19 +85,68 @@ router.post('/:id/generate', async (req, res) => {
       }
     }
 
+    console.log(formData)
+
     const aiRes = await fetch('http://localhost:8000/api/resume-generator', {
       method: 'POST',
       body: formData,
     })
 
+    if (!aiRes.ok) throw new Error('AI service error')
     const data = await aiRes.json()
-jd.cv = data.data.latex
-await jd.save()
-res.json({ success: true, data: jd.cv })
+    const latex = data.data.latex
+
+    // ensure dirs exist
+    const latexDir = path.join(process.cwd(), 'public', 'latex')
+    const pdfDir = path.join(process.cwd(), 'public', 'pdfs')
+    if (!fs.existsSync(latexDir)) fs.mkdirSync(latexDir, { recursive: true })
+    if (!fs.existsSync(pdfDir)) fs.mkdirSync(pdfDir, { recursive: true })
+
+    // save latex
+    const texFilename = `${jd._id}.tex`
+    fs.writeFileSync(path.join(latexDir, texFilename), latex)
+
+    // compile and save pdf
+let pdfSaved = false
+const pdfPath = path.join(pdfDir, `${jd._id}.pdf`)
+
+try {
+  const fileUrl = `${process.env.PUBLIC_URL}/public/latex/${texFilename}`
+  const compileUrl = `https://latexonline.cc/compile?url=${encodeURIComponent(fileUrl)}`
+  const compileRes = await fetch(compileUrl)
+  if (compileRes.ok) {
+    const buffer = await compileRes.arrayBuffer()
+    fs.writeFileSync(pdfPath, Buffer.from(buffer))
+    pdfSaved = true
+  }
+} catch {
+  // delete stale pdf if exists so frontend falls back to latex
+  if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath)
+  console.log('PDF compile failed — latex saved, pdf skipped')
+}
+
+    jd.cv = latex
+    jd.pdfAvailable = pdfSaved
+    await jd.save()
+
+    res.json({ success: true, data: { latex, pdfAvailable: pdfSaved } })
 
   } catch (err) {
     console.error(err)
-    res.status(500).json({ success: false, error: 'AI service unreachable' })
+    res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+router.get('/:id/pdf', (req, res) => {
+  try {
+    const pdfPath = path.join(process.cwd(), 'public', 'pdfs', `${req.params.id}.pdf`)
+    if (!fs.existsSync(pdfPath)) {
+      return res.status(404).json({ success: false, error: 'PDF not found' })
+    }
+    res.setHeader('Content-Type', 'application/pdf')
+    res.send(fs.readFileSync(pdfPath))
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
   }
 })
 
