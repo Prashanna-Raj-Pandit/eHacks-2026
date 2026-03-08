@@ -22,6 +22,8 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/public', express.static(path.join(__dirname, '../public')))
+app.use('/public/latex', express.static(path.join(__dirname, '../public/latex')))
+app.use('/public/pdfs', express.static(path.join(__dirname, '../public/pdfs')))
 
 app.use('/api/cv', cvRoutes)
 app.use('/api/upload', uploadRoutes)

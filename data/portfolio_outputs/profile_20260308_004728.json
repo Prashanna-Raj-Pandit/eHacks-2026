@@ -1,0 +1,118 @@
+{
+  "user": {
+    "firstName": "Sabin",
+    "lastName": "Ghimire",
+    "email": "sabin.ghimire1325@gmail.com",
+    "phone": "",
+    "bio": "Graduate student in Computer Science with a strong background in full-stack web development and Computer Engineering. Passionate about building scalable applications and growing as a full-stack engineer, with experience leading technical teams and contributing to various software projects.",
+    "location": "Maryville, Illinois, United States",
+    "skills": [
+      "Data Structures",
+      "Data Science",
+      "C++",
+      "Full Stack Development",
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "PostgreSQL",
+      "RESTful APIs",
+      "Web Development Frameworks",
+      "Computer Engineering",
+      "Team Leadership",
+      "Project Management"
+    ]
+  },
+  "workExperience": [
+    {
+      "company": "Southern Illinois University Edwardsville",
+      "role": "Graduate Teaching Assistant",
+      "startDate": "2026-01",
+      "endDate": "",
+      "current": true,
+      "description": "Assisting in teaching and research activities in the Computer Science department."
+    },
+    {
+      "company": "Freelance",
+      "role": "Full Stack Engineer",
+      "startDate": "2024-06",
+      "endDate": "2025-06",
+      "current": false,
+      "description": "Developed various web applications: a boutique store webpage, a portfolio management system for the Nepal Stock Exchange, and an Animal Finder application."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Team Lead",
+      "startDate": "2023-05",
+      "endDate": "2024-05",
+      "current": false,
+      "description": "Led the merger of three departments into a Frontend Department, implemented micro frontends and mono-repo, and improved code quality and coverage."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Associate Team Lead",
+      "startDate": "2021-12",
+      "endDate": "2023-05",
+      "current": false,
+      "description": "Managed an 8-member team for the Employee Evaluation System, organized a Code Camp, and conducted knowledge-sharing sessions."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Senior Software Engineer",
+      "startDate": "2021-07",
+      "endDate": "2021-11",
+      "current": false,
+      "description": "Built the Digital Lending System, integrating various services, and led a team for the Nepal Audit Management System."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Software Engineer",
+      "startDate": "2020-07",
+      "endDate": "2021-06",
+      "current": false,
+      "description": "Developed the Advertisement Management System, enhanced projects with Kanban boards and WYSIWYG editors, and introduced TypeScript in React."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Junior Software Engineer",
+      "startDate": "2019-10",
+      "endDate": "2020-07",
+      "current": false,
+      "description": "Developed the Weapon Inventory Management System for Nepal Police, improved the Online Police Clearance Report system, and created a data visualization module."
+    },
+    {
+      "company": "InfoDevelopers Pvt. Ltd.",
+      "role": "Trainee Developer",
+      "startDate": "2019-07",
+      "endDate": "2019-10",
+      "current": false,
+      "description": "Contributed to real-world projects and produced project documentation."
+    },
+    {
+      "company": "IT Training Nepal",
+      "role": "Course Instructor",
+      "startDate": "2022-08",
+      "endDate": "2023-04",
+      "current": false,
+      "description": "Developed and delivered training programs for Node.js and React Js."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Southern Illinois University Edwardsville",
+      "degree": "Master of Science",
+      "field": "Computer Science",
+      "startDate": "2025-08",
+      "endDate": "",
+      "current": true
+    },
+    {
+      "institution": "Kathmandu University (KU)",
+      "degree": "Bachelors",
+      "field": "Computer Engineering",
+      "startDate": "2015-08",
+      "endDate": "2019-12",
+      "current": false
+    }
+  ]
+}
