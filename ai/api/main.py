@@ -9,15 +9,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ai.app.config import settings
 from ai.app.profile_parser.run import run_profile_parser
-from ai.app.ingestion.ingest import main as phase1_main  # temporary if not yet refactored
-from ai.app.indexing.phase2_index import main as phase2_main  # temporary if not yet refactored
+from ai.app.ingestion.ingest import run_phase1
+from ai.app.indexing.phase2_index import run_phase2
 from ai.app.pipelines.phase3_resume import run_phase3_resume
 
 app = FastAPI(title="eHacks AI API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten later
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,7 +33,7 @@ def health() -> dict:
 async def profile_parser(file: UploadFile = File(...)) -> dict:
     settings.ensure_dirs()
 
-    if not file.filename.lower().endswith(".pdf"):
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
 
     temp_name = f"{uuid4()}_{file.filename}"
@@ -53,24 +53,68 @@ async def profile_parser(file: UploadFile = File(...)) -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _clear_directory_files(directory: Path) -> None:
+    if not directory.exists():
+        return
+
+    for item in directory.iterdir():
+        if item.is_file():
+            item.unlink()
+
+
 @app.post("/api/resume-generator")
 async def resume_generator(
     job_description: str = Form(...),
     target_role: str = Form(""),
+    files: list[UploadFile] = File(default=[]),
 ) -> dict:
     settings.ensure_dirs()
 
+    if not job_description.strip():
+        raise HTTPException(status_code=400, detail="job_description is required.")
+
     try:
-        # Save JD to a temporary file
+        # Clear previous uploaded PDFs so each request uses only current user input
+        _clear_directory_files(settings.pdf_dir)
+
+        saved_files: list[str] = []
+
+        # Save uploaded PDFs into data/raw/pdfs
+        for file in files:
+            if not file.filename:
+                continue
+
+            if not file.filename.lower().endswith(".pdf"):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsupported file type for {file.filename}. Only PDF files are allowed.",
+                )
+
+            safe_name = f"{uuid4()}_{file.filename}"
+            file_path = settings.pdf_dir / safe_name
+
+            with file_path.open("wb") as f:
+                shutil.copyfileobj(file.file, f)
+
+            saved_files.append(str(file_path))
+
+        # Save job description to a temp file
         jd_path = settings.output_dir / f"job_description_{uuid4()}.txt"
         jd_path.write_text(job_description, encoding="utf-8")
 
-        # Temporary version: call your existing phase CLIs through imported main functions
-        # Better version: replace these with run_phase1() and run_phase2() after refactor
-        phase1_main()
-        phase2_main()
+        # Run Phase 1 and Phase 2 using callable functions
+        phase1_result = run_phase1(
+            repos=[],
+            github_user=settings.github_username,
+            repo_limit=0,
+            skip_github=True,
+            skip_pdf=False,
+        )
 
-        result = run_phase3_resume(
+        phase2_result = run_phase2()
+
+        # Run Phase 3 resume generation
+        phase3_result = run_phase3_resume(
             job_file=jd_path,
             target_role=target_role,
             save_prefix="resume_api",
@@ -79,11 +123,17 @@ async def resume_generator(
         return {
             "success": True,
             "data": {
-                "latex": result["latex"],
-                "structured_json": result["structured_json"],
-                "tex_path": result["tex_path"],
-                "json_path": result["json_path"],
+                "uploaded_files": saved_files,
+                "phase1": phase1_result,
+                "phase2": phase2_result,
+                "latex": phase3_result["latex"],
+                "structured_json": phase3_result["structured_json"],
+                "tex_path": phase3_result["tex_path"],
+                "json_path": phase3_result["json_path"],
             },
         }
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
