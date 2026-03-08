@@ -74,15 +74,15 @@ router.post('/:id/generate', async (req, res) => {
       }
     }
 
-    // linkedin pdf
-    // if (user?.linkedinPdf) {
-    //   const linkedinPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
-    //   if (fs.existsSync(linkedinPath)) {
-    //     const buffer = fs.readFileSync(linkedinPath)
-    //     const blob = new Blob([buffer], { type: 'application/pdf' })
-    //     formData.append('files', blob, user.linkedinPdf)
-    //   }
-    // }
+//     linkedin pdf
+     if (user?.linkedinPdf) {
+       const linkedinPath = path.join(process.cwd(), 'public', 'uploads', user.linkedinPdf)
+       if (fs.existsSync(linkedinPath)) {
+         const buffer = fs.readFileSync(linkedinPath)
+         const blob = new Blob([buffer], { type: 'application/pdf' })
+         formData.append('files', blob, user.linkedinPdf)
+       }
+     }
 
     console.log(formData)
 
