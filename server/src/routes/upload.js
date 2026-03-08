@@ -1,13 +1,14 @@
 import { Router } from 'express'
 import UploadMiddleware from '../middlewares/upload.js'
 import document from '../models/document.js'
+import asyncHandler from '../utils/async.js'
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const documents = await document.find().sort({ createdAt: -1 })
   res.json({ success: true, data: documents })
-})
+}))
 
 router.post('/', UploadMiddleware().array('imageFiles', 5), async (req, res) => {
   const { name, type } = req.body
