@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 // import Messages from './pages/Messages'
 import Upload from "./pages/Upload";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile/Profile";
 import CVGenerator from "./pages/CVGenerator";
 
 function Nav() {

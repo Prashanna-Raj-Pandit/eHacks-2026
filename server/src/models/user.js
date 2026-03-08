@@ -7,6 +7,9 @@ const UserSchema = new mongoose.Schema({
   phone: { type: String, default: '' },
   bio: { type: String, default: '' },
   location: { type: String, default: '' },
+  githubUsername: { type: String, default: '' },
+  skills: [{ type: String }],
+  linkedinPdf: { type: String, default: null },
 
   // auth fields — not used yet but ready
   password: { type: String, default: null },

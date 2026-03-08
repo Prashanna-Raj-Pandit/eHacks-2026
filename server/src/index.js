@@ -8,6 +8,9 @@ import cvRoutes from './routes/cv.js'
 import path from 'path'
 import userRoutes from './routes/user.js'
 import { fileURLToPath } from 'url'
+import workExperienceRoutes from './routes/work-experience.js'
+import educationRoutes from './routes/education.js'
+import projectRoutes from './routes/project.js'
 
 dotenv.config()
 
@@ -24,6 +27,9 @@ app.use('/api/cv', cvRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/work-experience', workExperienceRoutes)
+app.use('/api/education', educationRoutes)
+app.use('/api/projects', projectRoutes)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
