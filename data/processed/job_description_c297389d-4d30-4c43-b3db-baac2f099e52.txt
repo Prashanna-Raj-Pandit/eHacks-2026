@@ -1,0 +1,30 @@
+<pre data-language="plain">
+Job Description
+
+This is a remote, project-based role for data scientists and machine learning professionals with 1–3 years of work experience. You will complete tasks similar to those performed in data science, machine learning engineering, AI research, or analytics roles. Work is over the next 2-3 weeks, asynchronous, and assigned on a project-by-project basis, with an expected commitment of 10–20 hours per week for the projects you accept. This position offers highly competitive pay, exposure to real-world ML/data problems, and an excellent opportunity to boost your resume.
+
+
+Why Apply
+
+Flexible Time Commitment – Work on your schedule while gaining valuable experience
+Startup Exposure – Work directly with an early-stage Y Combinator-backed company, gaining hands-on experience that sets you apart
+Fantastic Pay &amp; Growth Opportunities – project based pay starts at est.
+Portfolio Building - Gain experience with cutting-edge problems and techniques
+Professional Growth - Sharpen your skills on varied, challenging datasets and models
+
+
+Responsibilities
+
+Assist in building, training, and evaluating machine learning models for various business applications
+Develop predictive models using supervised and unsupervised learning techniques
+Optimize model performance through hyperparameter tuning and feature engineering
+Document methodologies, model assumptions, and technical approaches
+
+
+Required Qualifications
+
+1–3 years of professional experience in data science, machine learning, or related fields
+Strong problem-solving skills and ability to work independently on technical tasks
+Masters degree in Computer Science, Statistics, Mathematics, Data Science, or related quantitative field
+At least 1 first author publication or first-author equivalent work
+</pre><ul><li></li></ul>
