@@ -12,6 +12,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass
 class Settings:
+    portfolio_input_dir: Path = PROJECT_ROOT / os.getenv("PORTFOLIO_INPUT_DIR", "data/portfolio_inputs")
+    portfolio_output_dir: Path = PROJECT_ROOT / os.getenv("PORTFOLIO_OUTPUT_DIR", "data/portfolio_outputs")
+
     cohere_api_key: str = os.getenv("COHERE_API_KEY", "")
     cohere_model: str = os.getenv("COHERE_MODEL", "command-r-plus-08-2024")
 
@@ -77,6 +80,8 @@ class Settings:
         self.local_repo_dir.mkdir(parents=True, exist_ok=True)
         self.chroma_dir.mkdir(parents=True, exist_ok=True)
         self.phase3_output_dir.mkdir(parents=True, exist_ok=True)
+        self.portfolio_input_dir.mkdir(parents=True, exist_ok=True)
+        self.portfolio_output_dir.mkdir(parents=True, exist_ok=True)
 
 
 settings = Settings()
