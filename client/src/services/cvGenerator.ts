@@ -9,3 +9,4 @@ export const deleteJD = (id: string) =>
   api.delete(`/api/cv/${id}`)
 export const generateCV = (id: string) =>
   api.post(`/api/cv/${id}/generate`)
+export const compileCV = (id: string) => api.post(`/api/cv/${id}/compile`)
