@@ -203,73 +203,7 @@ skill-surface-mvp/
 
 ---
 
-## Getting Started
 
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/ashasiue/skill-surface-mvp.git
-cd skill-surface-mvp
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your OpenAI API key
-```
-
-### Run the Demo
-
-```bash
-# Phase 1-3: Ingest, chunk, and store
-python demo.py --ingest --repo "https://github.com/example/repo"
-
-# Phase 4-5: Query and generate bullets
-python demo.py --job-description "job_description.txt"
-```
-
----
-
-## Demo Flow (What Judges Will See)
-
-### Input
-```
-Job Description: Senior Python Engineer
-
-Required Skills:
-- Async Python
-- FastAPI
-- Docker
-- Database design
-```
-
-### Processing
-```
-1. Extract skills from JD
-2. For each skill, query ChromaDB
-3. Retrieve top evidence chunks
-4. Generate resume bullets
-```
-
-### Output
-```
-SKILL: Async Python
-Evidence: "Implemented async event handlers in production service"
-Source: my-repo/services/events.py (lines 45-67)
-
-BULLET GENERATED:
-• Designed and deployed async Python services handling 10K+ concurrent requests, 
-  reducing latency by 40% through event-driven architecture
-
----
-
-SKILL: FastAPI
 Evidence: "Built REST API with FastAPI, includes authentication and rate limiting"
 Source: my-repo/api/main.py (lines 1-200)
 
@@ -343,13 +277,3 @@ BULLET GENERATED:
 6. **Final:** Record 2-minute demo video
 
 ---
-
-## Questions?
-
-This MVP focuses on **clarity, practicality, and working demo** over complexity.
-
-The goal: Show judges a real problem, a working solution, and a user who would immediately benefit.
-
----
-
-**Status:** MVP Ready 🚀
