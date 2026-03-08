@@ -66,6 +66,9 @@ def _clear_directory_files(directory: Path) -> None:
 async def resume_generator(
     job_description: str = Form(...),
     target_role: str = Form(""),
+    github_user: str = Form(""),
+    repos: str = Form(""),
+    repo_limit: int = Form(3),
     files: list[UploadFile] = File(default=[]),
 ) -> dict:
     settings.ensure_dirs()
@@ -74,7 +77,19 @@ async def resume_generator(
         raise HTTPException(status_code=400, detail="job_description is required.")
 
     try:
-        # Clear previous uploaded PDFs so each request uses only current user input
+        # Parse repo list from comma-separated form field
+        parsed_repos = [repo.strip() for repo in repos.split(",") if repo.strip()]
+
+        has_github = bool(github_user.strip())
+        has_files = len(files) > 0
+
+        if not has_github and not has_files:
+            raise HTTPException(
+                status_code=400,
+                detail="Provide at least one source: uploaded PDF files or github_user.",
+            )
+
+        # Clear previous uploaded PDFs so each request uses only current uploaded files
         _clear_directory_files(settings.pdf_dir)
 
         saved_files: list[str] = []
@@ -102,18 +117,20 @@ async def resume_generator(
         jd_path = settings.output_dir / f"job_description_{uuid4()}.txt"
         jd_path.write_text(job_description, encoding="utf-8")
 
-        # Run Phase 1 and Phase 2 using callable functions
+        # Decide what sources to use
+        skip_github = not has_github
+        skip_pdf = not has_files
+
         phase1_result = run_phase1(
-            repos=[],
-            github_user=settings.github_username,
-            repo_limit=0,
-            skip_github=True,
-            skip_pdf=False,
+            repos=parsed_repos,
+            github_user=github_user.strip() or None,
+            repo_limit=repo_limit,
+            skip_github=skip_github,
+            skip_pdf=skip_pdf,
         )
 
         phase2_result = run_phase2()
 
-        # Run Phase 3 resume generation
         phase3_result = run_phase3_resume(
             job_file=jd_path,
             target_role=target_role,
@@ -124,6 +141,8 @@ async def resume_generator(
             "success": True,
             "data": {
                 "uploaded_files": saved_files,
+                "github_user": github_user.strip(),
+                "repos": parsed_repos,
                 "phase1": phase1_result,
                 "phase2": phase2_result,
                 "latex": phase3_result["latex"],
