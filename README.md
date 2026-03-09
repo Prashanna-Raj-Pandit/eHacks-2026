@@ -18,6 +18,10 @@ This project aims to solve that problem by building an AI-powered evidence-based
 
 Instead of manually writing resumes, this system builds a knowledge base of the candidate's actual work and uses Retrieval-Augmented Generation (RAG) to create a resume grounded in real evidence.
 
+
+<img src="data/evidenveCV-rag.png"></img>
+
+
 ### Built With
 
 * [![Python][Python-logo]][Python-url]
