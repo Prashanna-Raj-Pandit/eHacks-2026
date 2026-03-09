@@ -1,6 +1,9 @@
 # EvidenceCV: Evidence-Based Resume Generation using RAG
 
 > 🏆 Built at **eHacks Hackathon** — St. Louis, 2026 (Mar 6–8) &nbsp;|&nbsp; 🥉 **3rd Place Winner**
+
+<img src="data/thumbnail.png"></img>
+
 ## Overview
 
 The hiring landscape has changed dramatically in recent years. Most companies no longer manually review resumes first - they rely on AI-driven Applicant Tracking Systems (ATS) to automatically filter candidates before a human ever sees the application.
